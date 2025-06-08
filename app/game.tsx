@@ -25,7 +25,7 @@ interface Item {
 const goodItems: string[] = [
   "su",
   "düdük",
-  "ilk yardım çantası",
+  "ilkyardım",
   "konserve",
   "battaniye",
   "pil",
@@ -33,8 +33,7 @@ const goodItems: string[] = [
   "radyo",
 ];
 const badItems: string[] = [
-  "koli bandı",
-  "oyuncak araba",
+  "oyuncak",
   "cips",
   "kitap",
   "vazo",
@@ -144,6 +143,8 @@ const Game: React.FC = () => {
     return () => clearInterval(spawnItem);
   }, [gameStarted, gameOver]);
 
+  console.log(items);
+
   // Ana Oyun Döngüsü (requestAnimationFrame ile)
   useEffect(() => {
     if (!gameStarted || gameOver) {
@@ -202,6 +203,7 @@ const Game: React.FC = () => {
             } else {
               const newLives = lives - 1;
               if (newLives === 0) {
+                setLives(newLives);
                 setGameOver(true);
               }
               setLives(newLives);
@@ -218,9 +220,9 @@ const Game: React.FC = () => {
               if (newLives === 0) {
                 setGameOver(true);
               } else {
-                setLives(newLives);
                 hitOrMissSound.current?.play();
               }
+              setLives(newLives);
             }
             itemHandled = true; // Eşya ekran dışına çıktı ve işlendi
           }
