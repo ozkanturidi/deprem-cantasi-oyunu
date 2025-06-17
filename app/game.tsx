@@ -151,8 +151,6 @@ const Game: React.FC = () => {
     return () => clearInterval(spawnItem);
   }, [gameStarted, gameOver, isPaused]);
 
-  console.log(items);
-
   // Ana Oyun Döngüsü (requestAnimationFrame ile)
   useEffect(() => {
     if (!gameStarted || gameOver || isPaused) {
@@ -268,6 +266,16 @@ const Game: React.FC = () => {
     };
   }, [gameStarted, gameOver, playerX, score, lives, isPaused]); // playerX, score, lives'ı bağımlılık olarak tutmaya devam ediyoruz
 
+  useEffect(() => {
+    if (backgroundMusic.current) {
+      if (isPaused || !gameStarted) {
+        backgroundMusic.current.pause();
+      } else {
+        backgroundMusic.current.play();
+      }
+    }
+  }, [gameStarted, isPaused]);
+
   const resetAndStartGame = () => {
     setGameStarted(true);
     setGameOver(false);
@@ -314,6 +322,8 @@ const Game: React.FC = () => {
     const formattedType = itemType.replace(/\s+/g, "-").toLowerCase();
     return `/images/${formattedType}.png`; // Yolu public/images klasörüne göre ayarla
   };
+
+  console.log(gameOver);
 
   return (
     <div
@@ -454,95 +464,94 @@ const Game: React.FC = () => {
             />
           ))}
 
-          {gameOver ||
-            (isPaused && (
-              <div
+          {(gameOver || isPaused) && (
+            <div
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                textAlign: "center",
+                backgroundColor: "rgba(255, 255, 255, 0.9)",
+                padding: "30px 50px",
+                borderRadius: "10px",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              }}
+            >
+              {gameOver ? <h2>Oyun Bitti!</h2> : <></>}
+              <p>Puanınız: {score}</p>
+              <p>Kalan Canınız: {lives}</p>
+              {isPaused && (
+                <button
+                  onClick={resumeGame}
+                  style={{
+                    padding: "12px 25px",
+                    marginRight: "10px",
+                    fontSize: "18px",
+                    backgroundColor: "#2196F3",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                    marginTop: "20px",
+                    transition: "background-color 0.3s ease",
+                  }}
+                  onMouseOver={(e) =>
+                    (e.currentTarget.style.backgroundColor = "#1976D2")
+                  }
+                  onMouseOut={(e) =>
+                    (e.currentTarget.style.backgroundColor = "#2196F3")
+                  }
+                >
+                  Devam Et
+                </button>
+              )}
+              <button
+                onClick={resetAndStartGame}
                 style={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  textAlign: "center",
-                  backgroundColor: "rgba(255, 255, 255, 0.9)",
-                  padding: "30px 50px",
-                  borderRadius: "10px",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                  padding: "12px 25px",
+                  fontSize: "18px",
+                  backgroundColor: "#2196F3",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                  marginTop: "20px",
+                  transition: "background-color 0.3s ease",
                 }}
+                onMouseOver={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#1976D2")
+                }
+                onMouseOut={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#2196F3")
+                }
               >
-                {gameOver ? <h2>Oyun Bitti!</h2> : <></>}
-                <p>Puanınız: {score}</p>
-                <p>Kalan Canınız: {lives}</p>
-                {isPaused && (
-                  <button
-                    onClick={resumeGame}
-                    style={{
-                      padding: "12px 25px",
-                      marginRight: "10px",
-                      fontSize: "18px",
-                      backgroundColor: "#2196F3",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "5px",
-                      cursor: "pointer",
-                      marginTop: "20px",
-                      transition: "background-color 0.3s ease",
-                    }}
-                    onMouseOver={(e) =>
-                      (e.currentTarget.style.backgroundColor = "#1976D2")
-                    }
-                    onMouseOut={(e) =>
-                      (e.currentTarget.style.backgroundColor = "#2196F3")
-                    }
-                  >
-                    Devam Et
-                  </button>
-                )}
-                <button
-                  onClick={resetAndStartGame}
-                  style={{
-                    padding: "12px 25px",
-                    fontSize: "18px",
-                    backgroundColor: "#2196F3",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                    marginTop: "20px",
-                    transition: "background-color 0.3s ease",
-                  }}
-                  onMouseOver={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#1976D2")
-                  }
-                  onMouseOut={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#2196F3")
-                  }
-                >
-                  Tekrar Oyna
-                </button>
-                <button
-                  onClick={navigateHome}
-                  style={{
-                    padding: "12px 25px",
-                    fontSize: "18px",
-                    backgroundColor: "#2196F3",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                    marginTop: "20px",
-                    transition: "background-color 0.3s ease",
-                  }}
-                  onMouseOver={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#1976D2")
-                  }
-                  onMouseOut={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#2196F3")
-                  }
-                >
-                  Ana Ekrana Dön
-                </button>
-              </div>
-            ))}
+                Tekrar Oyna
+              </button>
+              <button
+                onClick={navigateHome}
+                style={{
+                  padding: "12px 25px",
+                  fontSize: "18px",
+                  backgroundColor: "#2196F3",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                  marginTop: "20px",
+                  transition: "background-color 0.3s ease",
+                }}
+                onMouseOver={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#1976D2")
+                }
+                onMouseOut={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#2196F3")
+                }
+              >
+                Ana Ekrana Dön
+              </button>
+            </div>
+          )}
         </>
       )}
       {gameStarted && !gameOver && (
